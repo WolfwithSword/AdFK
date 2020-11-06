@@ -1,0 +1,32 @@
+{
+  "name": "AdFK",
+  "version": "1.0.0",
+  "description": "AdFK - Run Twitch Ads when on specified AFK/BRB Scenes in OBS",
+  "main": "index.js",
+  "dependencies": {
+    "ejs": "^3.1.5",
+    "express": "^4.15.2",
+    "express-session": "^1.15.2",
+    "handlebars": "^4.0.6",
+    "obs-websocket-js": "^4.0.2",
+    "open": "^7.3.0",
+    "passport": "^0.3.2",
+    "passport-oauth": "^1.0.0",
+    "request": "^2.81.0"
+  },
+  "devDependencies": {
+    "pkg": "^4.4.9"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "build": "pkg index.js -o AdFK"
+  },
+  "pkg": {
+    "scripts": "*.js",
+    "targets": [
+      "node12"
+    ]
+  },
+  "author": "WolfwithSword",
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html><head><title>AdFK Config</title></head>
+<h1>Configuration</h1>
+<br>
+<br>
+<body>
+<form>
+	<label for="accessToken">Access Token</label><br>
+	<input disabled readonly type="password" id="accessToken" name="accessToken" value=<%= accessToken%>><br>
+	
+	<label for="refreshToken">Refresh Token</label><br>
+	<input disabled readonly type="password" id="refreshToken" name="refreshToken" value=<%= refreshToken%>><br>
+	
+	<label for="displayName">Configured Twitch User</label><br>
+	<input disabled readonly type="text" id="displayName" name="displayName" value=<%= displayName%>><br>
+	
+	<label for="broadcasterId">Configured Twitch User ID</label><br>
+	<input disabled readonly type="text" id="broadcasterId" name="broadcasterId" value=<%= broadcasterId%>><br>
+	
+	<br>
+	<br>
+	
+	<label for="clientId">Client ID</label><br>
+	<input type="password" id="clientId" name="clientId" value=<%= clientId%>><br>
+	
+	<label for="clientSecret">Client Secret</label><br>
+	<input type="password" id="clientSecret" name="clientSecret" value=<%= clientSecret%>><br>
+	
+	<label for="sessionSecret">Session Secret</label><br>
+	<input type="password" id="sessionSecret" name="sessionSecret" value=<%= sessionSecret%>><br>
+	
+	<label for="callbackURL">Callback URL</label><br>
+	<input type="input" id="callbackURL" name="callbackURL" value=<%= callbackURL%>><br>
+	
+	<label for="scope">Scope Access</label><br>
+	<input disabled readonly type="input" id="scope" name="scope" value=<%= scopeAccess%>><br>
+	
+	<br>
+	<br>
+	
+	<label for="delaySeconds">Delay until Ad (Seconds)</label><br>
+	<input type="number" id="delaySeconds" name="delaySeconds" value=<%= delaySeconds%>><br>
+		
+	<label for="obsAddress">OBS Websocket Address & Port</label><br>
+	<input type="input" id="obsAddress" name="obsAddress" value=<%= obsAddress%>><br>
+		
+	<label for="obsPassword">OBS Websocket Password (Optional)</label><br>
+	<input type="password" id="obsPassword" name="obsPassword" value=<%= obsPassword%>><br>
+		
+	<label for="obsAdScenes">OBS Ad Scenes (Comma Separated List)</label><br>
+	<input type="input" id="obsAdScenes" name="obsAdScenes" value=<%= obsScenesList%>><br>
+		
+		
+	<label for="adLength">Ad Length</label><br>
+	<select name="adLength" id="adLength">
+		<% availableAdLengths.forEach( (elem) => { %>
+				<option value=<%= elem%> <%= parseInt(elem) === parseInt(adLength) ? "selected" : "" %>><%= elem%></option>
+		<%}) %>
+	</select>
+	<br>
+	
+	<br>
+	<br>
+    <label for="port">Application Port (requires restart)</label><br>
+	<input type="number" id="port" name="port" value=<%= port%>><br>
+		
+	<br>
+	<br>
+	<br>
+	
+	<input type="submit" value="Save Changes">
+</form>
+<br>
+<br>
+<br>
+<br>
+<a href="/">Home</a>
+</body>
+</html>

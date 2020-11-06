@@ -1,0 +1,27 @@
+{
+    "accessToken": "",
+    "refreshToken": "",
+    "displayName": "",
+    "broadcasterId": "",
+    "clientId": "",
+    "clientSecret": "",
+    "sessionSecret": "AdFK1234987605",
+    "callbackURL": "http://localhost:{port}/auth/twitch/callback",
+    "scopeAccess": "channel:edit:commercial",
+    "delaySeconds": 10,
+    "obsAddress": "localhost:4444",
+    "obsPassword": "",
+    "obsAdScenes": [
+        "BRB_Scene"
+    ],
+    "availableAdLengths": [
+        30,
+        60,
+        90,
+        120,
+        150,
+        180
+    ],
+    "adLength": 60,
+    "port": 7482
+}

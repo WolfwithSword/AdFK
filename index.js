@@ -11,13 +11,8 @@ var OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
 var request = require('request');
 var handlebars = require('handlebars');
 
-const TWITCH_CLIENT_ID = config.clientId;
-const TWITCH_SECRET    = config.clientSecret;
-const SESSION_SECRET   = config.sessionSecret;
-const CALLBACK_URL     = config.callbackURL.replace("{port}", config.port);
-
 var app = express();
-app.use(session({secret: SESSION_SECRET, resave: false, saveUninitialized: false}));
+app.use(session({secret: config.sessionSecret, resave: false, saveUninitialized: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -26,48 +21,57 @@ app.engine('html', require('ejs').renderFile);
 
 const obs = new OBSWebSocket();
 
-OAuth2Strategy.prototype.userProfile = function(accessToken, done) {
-  var options = {
-    url: 'https://api.twitch.tv/helix/users',
-    method: 'GET',
-    headers: {
-      'Client-ID': TWITCH_CLIENT_ID,
-      'Accept': 'application/vnd.twitchtv.v5+json',
-      'Authorization': 'Bearer ' + accessToken
-    }
-  };
 
-  request(options, function (error, response, body) {
-    if (response && response.statusCode == 200) {
-      done(null, JSON.parse(body));
-    } else {
-      done(JSON.parse(body));
-    }
-  });
+function startOAuthStrategy(config) {
+	
+	OAuth2Strategy.prototype.userProfile = function(accessToken, done) {
+	  var options = {
+		url: 'https://api.twitch.tv/helix/users',
+		method: 'GET',
+		headers: {
+		  'Client-ID': config.clientId,
+		  'Accept': 'application/vnd.twitchtv.v5+json',
+		  'Authorization': 'Bearer ' + accessToken
+		}
+	  };
+	  request(options, function (error, response, body) {
+		if (response && response.statusCode == 200) {
+		  done(null, JSON.parse(body));
+		} else {
+		  done(JSON.parse(body));
+		}
+	  });
+	}
+
+	passport.serializeUser(function(user, done) {
+		done(null, user);
+	});
+
+	passport.deserializeUser(function(user, done) {
+		done(null, user);
+	});
+
+
+	passport.use('twitch', new OAuth2Strategy({
+		authorizationURL: 'https://id.twitch.tv/oauth2/authorize',
+		tokenURL: 'https://id.twitch.tv/oauth2/token',
+		clientID: config.clientId,
+		clientSecret: config.clientSecret,
+		callbackURL: config.callbackURL.replace("{port}",config.port),
+		state: true
+	  },
+	  function(accessToken, refreshToken, profile, done) {
+		profile.accessToken = accessToken;
+		profile.clientId = config.clientId;
+		profile.refreshToken = refreshToken;
+		done(null, profile);
+	  }
+	));
 }
 
-passport.serializeUser(function(user, done) {
-    done(null, user);
-});
-
-passport.deserializeUser(function(user, done) {
-    done(null, user);
-});
-
-passport.use('twitch', new OAuth2Strategy({
-    authorizationURL: 'https://id.twitch.tv/oauth2/authorize',
-    tokenURL: 'https://id.twitch.tv/oauth2/token',
-    clientID: TWITCH_CLIENT_ID,
-    clientSecret: TWITCH_SECRET,
-    callbackURL: CALLBACK_URL,
-    state: true
-  },
-  function(accessToken, refreshToken, profile, done) {
-    profile.accessToken = accessToken;
-    profile.refreshToken = refreshToken;
-    done(null, profile);
-  }
-));
+if(config.clientId != "" && config.clientSecret != "") {
+	startOAuthStrategy(config);
+}
 
 app.get('/auth/twitch', passport.authenticate('twitch', { scope: config.scopeAccess }));
 app.get('/auth/twitch/callback', passport.authenticate('twitch', { successRedirect: '/', failureRedirect: '/' }));
@@ -161,7 +165,10 @@ app.get("/help", function(req, res) {
 
 app.get("/config", function(req, res) {
 	if(Object.keys(req.query).length != 0){
-		
+		let runOAuthStrat = false;
+		if (config['clientId'] == "" || config['clientSecret'] == "") {
+			runOAuthStrat = true;
+		}
 		config["clientId"] = req.query.clientId;
 		config["clientSecret"] = req.query.clientSecret;
 		config["sessionSecret"] = req.query.sessionSecret;
@@ -175,6 +182,9 @@ app.get("/config", function(req, res) {
 		fs.writeFile("./config.json", JSON.stringify(config, null, 4), err => {
 			if (err) throw err;
 		});
+		if(runOAuthStrat) {
+			startOAuthStrategy(config);
+		}
 		console.log("[APP] - Config updated. If port was changed, please restart AdFK");
 		res.redirect("/config");
 	}
@@ -195,7 +205,7 @@ app.get("/config", function(req, res) {
 app.get('/', function (req, res) {
   if(req.session && req.session.passport && req.session.passport.user) {
     res.send(successTemplate(req.session.passport.user.data[0]));
-	if(config["accessToken"] != req.session.passport.user.accessToken) {	
+	if(config["accessToken"] == "" || config["accessToken"] != req.session.passport.user.accessToken) {	
 		config["accessToken"] = req.session.passport.user.accessToken;
 		config["refreshToken"] = req.session.passport.user.refreshToken;
 		config["displayName"] = req.session.passport.user.data[0].display_name;

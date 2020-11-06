@@ -41,6 +41,12 @@ The remaining configuration is either meant to be readonly or auto-configured wh
 
 Note: For the initial startup, configuring clientId and clientSecret will require a restart if configured via the json file. The UI will change it live.
 
+### API 
+
+There is also an HTTP API which, once you are authenticated, you can hit to instantly run any ad.
+
+HTTP GET: http://localhost:{port}/ad/{length} where length must be one of the six preset lengths. These ads will play 1 second after being hit.
+
 
 ## Requirements
 OBS must be running before launching the program. If it isn't, then an error message will be displayed. Simple start OBS and restart AdFK to resolve.

@@ -1,6 +1,6 @@
 {
   "name": "AdFK",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AdFK - Run Twitch Ads when on specified AFK/BRB Scenes in OBS",
   "main": "index.js",
   "dependencies": {

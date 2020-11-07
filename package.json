@@ -22,7 +22,6 @@
     "build": "pkg index.js -o AdFK"
   },
   "pkg": {
-    "scripts": "*.js",
     "targets": [
       "node12"
     ]

@@ -1,7 +1,9 @@
-var config = require("./config.json");
-
 const OBSWebSocket = require('obs-websocket-js');
 const fs = require("fs");
+
+let rawConfig = fs.readFileSync("config.json");
+let config = JSON.parse(rawConfig);
+
 const open = require('open');
 const path = require("path");
 var express = require('express');
@@ -275,6 +277,13 @@ app.get("/ad/:duration", function (req, res) {
 	res.send(null);
 });
 
+function appendLeadingZeroes(n){
+  if(n <= 9){
+    return "0" + n;
+  }
+  return n
+}
+
 function runAd(length) {
 	console.log("[APP] - Attempting to run a "+length+"s ad");
 	request.post({
@@ -293,11 +302,35 @@ function runAd(length) {
 		json: true
 		},
 		(err, ress, body) => {
-			if (body.status == 401 && body.message == "Invalid OAuth token") {
+			if (body.hasOwnProperty("status") && body.status == 401 && body.message == "Invalid OAuth token") {
 				if ( config.accessToken != "") {
 					refreshToken(true, length);
 				}
-			} else {
+			}
+			else if (body.status == 400) {
+				console.log("[ERROR] - An ad has recently been run. Cannot run another");
+			}
+			else if(body.hasOwnProperty("data")) {
+				console.log("[APP] - "+ body.data[0].message);
+				
+				let time = new Date();
+				console.log("[APP] - " + appendLeadingZeroes(time.getHours()) + ":" 
+					+ appendLeadingZeroes(time.getMinutes()) + ":" 
+					+ appendLeadingZeroes(time.getSeconds()) + " - Ad Started");
+				console.log("[APP] - New Ad can be played in " + body.data[0].retry_after + " seconds");
+				
+				setTimeout( () => {
+					let newTime = new Date();
+					console.log("[APP] - " + appendLeadingZeroes(time.getHours()) + ":" 
+						+ appendLeadingZeroes(time.getMinutes()) + ":" 
+						+ appendLeadingZeroes(time.getSeconds()) + " - Ad Ended");
+				}, length * 1000);
+				
+				setTimeout( () => {
+					console.log("[APP] - A new Ad can be played");
+				}, body.data[0].retry_after * 1000);
+			}
+			else {
 				console.log("[ERROR] - Could not run ad");
 				console.log(body);
 			}

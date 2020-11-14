@@ -15,11 +15,17 @@ The second way is to manually configure the json file.
 
 You are required to register a twitch application for this app.
 This can be done as follows: 
+
 	- [Register](https://dev.twitch.tv/console/apps/create) a new Twitch Application with the name **AdFK**
+	
 	- OAuth redirect url: **http://localhost:7482/auth/twitch/callback**
+	
 	- Category: Application Integration (Or Other, describe that this tool is for automating ads with OBS)
+	
 	- Go to **Manage Application** and copy the Client Id into the config.json.
+	
 	- **Generate** a new Client Secret and copy it into the config.json. DO NOT SHARE THIS.
+	
 
 For the rest of the config, some fields will be automatically populated and can be ignored. The following fields **must** be set if empty, or **can** be changed by you:
 - clientId
@@ -54,12 +60,17 @@ OBS must be running before launching the program. If it isn't, then an error mes
 OBS must also have the WebSocket plugin.
 
 ## Build
+
 Install Dependencies
+
 `npm install`
 
 Run/Test locally
+
 `npm start`
 
 Build executable*
+
 `npm build`
+
 Executable will be AdFK.exe, and requires config.json and the views folder (and contents).
